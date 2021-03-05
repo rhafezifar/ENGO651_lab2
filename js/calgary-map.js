@@ -35,9 +35,15 @@ document.addEventListener('DOMContentLoaded', function(){
 					fillOpacity: 0.5
 				};
 
+				const p = permit.properties;
+
+				const issuedate = p.issueddate.slice(0,10);
+
+				const popupinfo = `Issue date: ${issuedate}<br>Work Class Group: ${p.workclassgroup}<br>Contractor Name: ${p.contractorname}<br>Community Name: ${p.communityname}<br>Original Address: ${p.originaladdress}`;
+
 				L.geoJSON(permit, {
 					onEachFeature: function (feature, layer) {
-						layer.bindPopup(feature.properties.originaladdress);
+						layer.bindPopup(popupinfo);
 					},
 					pointToLayer: function (feature, latlng) {
 						return L.circleMarker(latlng, geojsonMarkerOptions);
