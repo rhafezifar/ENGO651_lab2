@@ -2,13 +2,27 @@
 
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+   <meta charset="utf-8">
+   <title>Calgary Permits</title>
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
 
-  <title>Calgary Permits</title>
+   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
 
+   <script src="js/calgary-map.js"></script>
+
+   <style type="text/css">
+   	#mapid { height: 400px; }
+   </style>
 </head>
 
 <body>
-  <h1>Hello</h1>
+   <h1>Calgary Building Permits Search</h1>
+   <button>Search</button>
+   <br><br>
+   <div id="mapid"></div>
 </body>
 </html>
