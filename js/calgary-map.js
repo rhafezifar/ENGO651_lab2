@@ -22,13 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     mymap.addLayer(markers);
 
-    let circleIcon = L.icon({
-        iconUrl: 'icon.png',
-        iconSize:     [16, 16], // size of the icon
-        iconAnchor:   [8, 8], // point of the icon which will correspond to marker's location
-        popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
-    });
-
     document.querySelector('button').onclick = function () {
         const request = new XMLHttpRequest();
         const fromdate = document.querySelector('#from-datepicker').value;
@@ -55,9 +48,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!permit.geometry){
                     continue;
                 }
+                const geojsonMarkerOptions = {
+                    radius: 6,
+                    fillColor: "#8442f5",
+                    color: "#000",
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.5
+                };
                 let coor = permit.geometry.coordinates;
                 let latLong = [coor[1], coor[0]];
-                let marker = L.marker(latLong, {icon: circleIcon});
+                let marker = L.circleMarker(latLong, geojsonMarkerOptions);
                 marker.desc = popupinfo;
                 marker.bindPopup(popupinfo);
                 markers.addLayer(marker);
