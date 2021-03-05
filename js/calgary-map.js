@@ -17,16 +17,16 @@ document.addEventListener('DOMContentLoaded', function () {
         accessToken: 'pk.eyJ1IjoicmF5ZWhlIiwiYSI6ImNrbHZ5NHMyejBkdXcyc214OHlvNmhrZG0ifQ.KXVOh3T-0PdiPnVQ5iMCCQ'
     }).addTo(mymap);
 
-    var oms = new OverlappingMarkerSpiderfier(mymap);
-    oms.addListener('spiderfy', function(markers) {
-        mymap.closePopup();
+    let markers = L.markerClusterGroup({
+        removeOutsideVisibleBounds: false
     });
+    mymap.addLayer(markers);
 
-    var circleIcon = L.icon({
+    let circleIcon = L.icon({
         iconUrl: 'icon.png',
         iconSize:     [16, 16], // size of the icon
         iconAnchor:   [8, 8], // point of the icon which will correspond to marker's location
-        popupAnchor:  [8, 8] // point from which the popup should open relative to the iconAnchor
+        popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
     });
 
     document.querySelector('button').onclick = function () {
@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
         	alert("From and/or To date is not selected!");
         	return false;
 		}
+        markers.clearLayers();
         let url = `https://data.calgary.ca/resource/c2es-76ed.geojson?$where=issueddate >= '${fromdate}' and issueddate <= '${todate}'`
         request.open('GET', url);
         request.onload = function () {
@@ -54,18 +55,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!permit.geometry){
                     continue;
                 }
-                var coor = permit.geometry.coordinates;
-                var latLong = [coor[1], coor[0]];
-                var marker = L.marker(latLong, {icon: circleIcon}).addTo(mymap);
+                let coor = permit.geometry.coordinates;
+                let latLong = [coor[1], coor[0]];
+                let marker = L.marker(latLong, {icon: circleIcon});
                 marker.desc = popupinfo;
-                var popup = new L.Popup();
-                oms.addListener('click', function(marker) {
-                    popup.setContent(marker.desc);
-                    popup.setLatLng(marker.getLatLng());
-                    mymap.openPopup(popup);
-                });
-                mymap.addLayer(marker);
-                oms.addMarker(marker);
+                marker.bindPopup(popupinfo);
+                markers.addLayer(marker);
             }
         };
         request.send();
