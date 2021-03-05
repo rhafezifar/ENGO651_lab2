@@ -17,8 +17,17 @@ document.addEventListener('DOMContentLoaded', function () {
         accessToken: 'pk.eyJ1IjoicmF5ZWhlIiwiYSI6ImNrbHZ5NHMyejBkdXcyc214OHlvNmhrZG0ifQ.KXVOh3T-0PdiPnVQ5iMCCQ'
     }).addTo(mymap);
 
-    var marker = L.marker([51.0447, -114.0719]).addTo(mymap);
-    marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
+    var oms = new OverlappingMarkerSpiderfier(mymap);
+    oms.addListener('spiderfy', function(markers) {
+        map.closePopup();
+    });
+
+    var circleIcon = L.icon({
+        iconUrl: 'icon.png',
+        iconSize:     [16, 16], // size of the icon
+        iconAnchor:   [8, 8], // point of the icon which will correspond to marker's location
+        popupAnchor:  [8, 8] // point from which the popup should open relative to the iconAnchor
+    });
 
     document.querySelector('button').onclick = function () {
         const request = new XMLHttpRequest();
@@ -39,30 +48,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log(permit.properties.issueddate);
                 console.log(permit.properties.originaladdress);
 
-                const geojsonMarkerOptions = {
-                    radius: 6,
-                    fillColor: "#8442f5",
-                    color: "#000",
-                    weight: 1,
-                    opacity: 1,
-                    fillOpacity: 0.5
-                };
-
                 const p = permit.properties;
-
                 const issuedate = p.issueddate.slice(0, 10);
-
                 const popupinfo = `Issue date: ${issuedate}<br>Work Class Group: ${p.workclassgroup}<br>Contractor Name: ${p.contractorname}<br>Community Name: ${p.communityname}<br>Original Address: ${p.originaladdress}`;
-
-                L.geoJSON(permit, {
-                    onEachFeature: function (feature, layer) {
-                        layer.bindPopup(popupinfo);
-                    },
-                    pointToLayer: function (feature, latlng) {
-                        return L.circleMarker(latlng, geojsonMarkerOptions);
-                    }
-                }).addTo(mymap);
-
+                if (!permit.geometry){
+                    continue;
+                }
+                var coor = permit.geometry.coordinates;
+                var latLong = [coor[1], coor[0]];
+                var marker = L.marker(latLong, {icon: circleIcon}).addTo(mymap);
+                marker.desc = popupinfo;
+                var popup = new L.Popup();
+                oms.addListener('click', function(marker) {
+                    popup.setContent(marker.desc);
+                    popup.setLatLng(marker.getLatLng());
+                    mymap.openPopup(popup);
+                });
+                mymap.addLayer(marker);
+                oms.addMarker(marker);
             }
         };
         request.send();
