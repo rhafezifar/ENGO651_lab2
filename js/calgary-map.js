@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var oms = new OverlappingMarkerSpiderfier(mymap);
     oms.addListener('spiderfy', function(markers) {
-        map.closePopup();
+        mymap.closePopup();
     });
 
     var circleIcon = L.icon({
