@@ -15,11 +15,37 @@ document.addEventListener('DOMContentLoaded', function(){
 
 	document.querySelector('button').onclick = function(){
 		const request = new XMLHttpRequest();
-		console.log("Here");
-		let url = `https://data.calgary.ca/resource/c2es-76ed.geojson?$where=issueddate > '2020-01-21' and issueddate < '2020-01-22'`
+		let url = `https://data.calgary.ca/resource/c2es-76ed.geojson?$where=issueddate >= '2020-01-21' and issueddate <= '2020-01-25'`
 		request.open('GET', url);
 		request.onload = function() {
 			const data = JSON.parse(request.responseText);
+			console.log("data loaded");
+			console.log(data);
+			for (let permit of data.features){
+				console.log(permit);
+				console.log(permit.properties.issueddate);
+				console.log(permit.properties.originaladdress);
+
+				const geojsonMarkerOptions = {
+					radius: 6,
+					fillColor: "#8442f5",
+					color: "#000",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.5
+				};
+
+				L.geoJSON(permit, {
+					onEachFeature: function (feature, layer) {
+						layer.bindPopup(feature.properties.originaladdress);
+					},
+					pointToLayer: function (feature, latlng) {
+						return L.circleMarker(latlng, geojsonMarkerOptions);
+					}
+				}).addTo(mymap);
+
+			}
 		};
+		request.send();
 	};
 });
